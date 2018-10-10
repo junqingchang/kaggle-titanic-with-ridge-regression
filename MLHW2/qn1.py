@@ -42,16 +42,38 @@ print(w.get_value())
 # ====================================================================================
 # Qn 1(c)
 # TODO
-def costgrad(coefficient,x,y,l):
-    cost = np.sum((y-np.sum(np.dot(x,coefficient)))**2) + (l/2)*np.sum(coefficient**2)
-    grad = 2*(y-x)
-    return cost,grad
-l = 0.15
-coefficient = np.random.randn(4)
-x = tX        #data to pass into costgrad
-y = tY   #parameter to be optimized
-optcoeff,cost,messages = minimize(costgrad,coefficient,args=[x,y,l])
-print(optcoeff)
+# def costgrad(coefficient,x,y,l):
+#     cost = np.sum((y-np.sum(np.dot(x,coefficient)))**2) + (l/2)*np.sum(coefficient**2)
+#     grad = 2*np.multiply(np.transpose(x),(np.dot(x,coefficient)-y))+ np.dot(coefficient
+#     print(grad)
+#     return cost,grad
+# l = 0.15
+# coefficient = np.random.randn(4)
+# x = tX        #data to pass into costgrad
+# y = tY   #parameter to be optimized
+# optcoeff,cost,messages = minimize(costgrad,coefficient,args=[x,y,l])
+# print(optcoeff)
+
+# def costgrad(a,x):
+#     cost = np.sum((a-x)**2)
+#     grad = 2*(a-x)
+#     return cost,grad
+# x = tX #data to pass into costgrad
+# a = np.random.randn(4) #parameter to be optimized
+# opta,cost,messages = minimize(costgrad,a,args=[x])
+# print(opta)
+
+def costgrad(w,x,y):
+	n = x.shape[0]
+	lamda = 0.15
+	emp_risk = np.sum((np.dot(x,w).flatten() - y) **2)/2/n
+	reg_risk = np.sum(w[:-1] **2 ) * lamda/2
+	risk = emp_risk +reg_risk
+	grad = (lamda *np.append(w[:-1],0)) + 1/n * np.dot(np.dot(np.transpose(x),x),w) - 1/n * np.dot(np.transpose(x),y)
+	return risk,grad
+w = np.zeros((d,1))
+optx, cost, messages = minimize(costgrad,w,args =[tX,tY])
+print(optx)
 
 # ====================================================================================
 # Qn 1(d)
