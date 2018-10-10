@@ -16,8 +16,8 @@ tX = X[10:]
 vY = Y[0:10]
 tY = Y[10:]
 
-print("==Shapes== \nvX:{vx} \ntX:{tx} \nvY:{vy} \ntY:{ty}".format(vx=vX.shape, tx=tX.shape, vy=vY.shape, ty=tY.shape))
-
+print("Qn1(a) \nvX:{vx} \ntX:{tx} \nvY:{vy} \ntY:{ty}".format(vx=vX.shape, tx=tX.shape, vy=vY.shape, ty=tY.shape))
+print()
 # ====================================================================================
 # Qn 1(b)
 
@@ -37,44 +37,27 @@ train_model = theano.function(inputs=[],
                             givens={x:tX, y:tY})
 for i in range(steps):
     train_model()
-print(w.get_value())
-
+print("Qn1(b)")
+print("w: {wval}".format(wval=w.get_value()))
+# We can assume x2 (the 3rd feature) to be irrelevant since the value is near 0
+print()
 # ====================================================================================
 # Qn 1(c)
-# TODO
-# def costgrad(coefficient,x,y,l):
-#     cost = np.sum((y-np.sum(np.dot(x,coefficient)))**2) + (l/2)*np.sum(coefficient**2)
-#     grad = 2*np.multiply(np.transpose(x),(np.dot(x,coefficient)-y))+ np.dot(coefficient
-#     print(grad)
-#     return cost,grad
-# l = 0.15
-# coefficient = np.random.randn(4)
-# x = tX        #data to pass into costgrad
-# y = tY   #parameter to be optimized
-# optcoeff,cost,messages = minimize(costgrad,coefficient,args=[x,y,l])
-# print(optcoeff)
 
-# def costgrad(a,x):
-#     cost = np.sum((a-x)**2)
-#     grad = 2*(a-x)
-#     return cost,grad
-# x = tX #data to pass into costgrad
-# a = np.random.randn(4) #parameter to be optimized
-# opta,cost,messages = minimize(costgrad,a,args=[x])
-# print(opta)
-
-def costgrad(w,x,y):
+def costgrad(w,x,y,l):
 	n = x.shape[0]
-	lamda = 0.15
 	emp_risk = np.sum((np.dot(x,w).flatten() - y) **2)/2/n
-	reg_risk = np.sum(w[:-1] **2 ) * lamda/2
+	reg_risk = np.sum(w[:-1] **2 ) * l/2
 	risk = emp_risk +reg_risk
-	grad = (lamda *np.append(w[:-1],0)) + 1/n * np.dot(np.dot(np.transpose(x),x),w) - 1/n * np.dot(np.transpose(x),y)
+	grad = (l *np.append(w[:-1],0)) + 1/n * np.dot(np.dot(np.transpose(x),x),w) - 1/n * np.dot(np.transpose(x),y)
 	return risk,grad
-w = np.zeros((d,1))
-optx, cost, messages = minimize(costgrad,w,args =[tX,tY])
-print(optx)
 
+w = np.zeros((d,1))
+l = 0.15
+optx, cost, messages = minimize(costgrad,w,args =[tX,tY,l])
+print("Qn1(c)")
+print("w using l=0.15 is {wval}".format(wval=optx))
+print()
 # ====================================================================================
 # Qn 1(d)
 def ridge_regression(X, Y, reg_penalty=0.15):
@@ -95,8 +78,9 @@ def ridge_regression(X, Y, reg_penalty=0.15):
     return(w.get_value())
         
 w = ridge_regression(tX, tY, 0.15)
-print(w)
-
+print("Qn1(d)")
+print("w using l=0.15 is {wval}".format(wval=w))
+print()
 # ====================================================================================
 # Qn 1(e)
 
@@ -111,6 +95,10 @@ for i in index:
     vloss = vloss+[np.sum((np.dot(vX,w)-vY)**2)/vn/2]
 
 import matplotlib.pyplot as plt
+print("Qn1(e)")
 plt.plot(index,np.log(tloss),'r')
 plt.plot(index,np.log(vloss),'b')
 plt.show()
+# Value of x = -0.467
+# Therefore lambda would be 10**-0.467 = 0.34119
+print("lambda=0.34119")
